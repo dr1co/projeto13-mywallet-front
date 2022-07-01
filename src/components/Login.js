@@ -1,6 +1,6 @@
 import axios from 'axios';
 import styled from 'styled-components';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useState, useContext, useEffect } from 'react';
 
 import UserContext from '../contexts/UserContext.js';
@@ -14,10 +14,11 @@ export default function Login() {
     const { setUser } = useContext(UserContext);
     const localUser = JSON.parse(localStorage.getItem("MWLocalUser"));
     const [message, setMessage] = useState("")
+    let navigate = useNavigate()
 
     useEffect(() => {
         if (localUser) {
-            //request no axios aqui embaixo:
+            //request no axios aqui embaixo: com token
             /*
                 setUser({
                     name: res.data.name,
@@ -26,6 +27,7 @@ export default function Login() {
                     token: res.data.token
                 })
             */
+           navigate("/home")
         }
     }, []);
 
@@ -43,6 +45,7 @@ export default function Login() {
                 localStorage.setItem("MWLocalUser", JSON.stringify(newUser.token));
                 setUser(newUser);
             */
+           navigate("/home")
         } else {
             setMessage("Os campos acima são obrigatórios!");
         }

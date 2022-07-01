@@ -27,7 +27,6 @@ export default function Home() {
                 type: "entrance" || "exit"
             }
         */
-        console.log("Passei pelo axios");
     }
 
     useEffect(() => getTransactions(), []);
@@ -35,40 +34,56 @@ export default function Home() {
     return (
         <Container>
             <PurpleBG />
-            <Header>
-                <h1>Olá, Fulano!</h1>
-                <Link to="/">
-                    <ExitIcon />
-                </Link>
-            </Header>
+            <Title name={user.name} />
             <History align={transactions.length > 0 ? "default" : "center"}>
                 <NoContent display={transactions.length > 0 ? "none" : "flex"}>
                     Não há registros de <br /> entrada ou saída
                 </NoContent>
                 {transactions.map((t) => <Transaction transaction={t} />)}
             </History>
-            <Buttons>
-                <AddTransaction onClick={() => console.log("oi")}>
-                    <PlusIcon />
-                    <p> Nova <br /> entrada </p>
-                </AddTransaction>
-                <AddTransaction onClick={() => console.log("xau")}>
-                    <MinusIcon />
-                    <p> Nova <br /> saída </p>
-                </AddTransaction>
-            </Buttons>
+            <ButtonsPanel />
         </Container>
     )
 }
 
 function Transaction({ transaction }) {
+    let navigate = useNavigate();
+
     return (
         <Element>
             <Date>{transaction.date}</Date>
-            <h1 onClick={() => console.log(`Editar ${transaction._id}`)}>{transaction.name}</h1>
-            <Value color={transaction.type === "entrance" ? "#03AC00" : "#C70000"}>{transaction.value}</Value>
+            <h1 onClick={() => navigate(`/edit/${transaction._id}`)}>{transaction.name}</h1>
+            <Value color={transaction.type === "entrance" ? "#03AC00" : "#C70000"}>{transaction.value.toFixed(2)}</Value>
             <CrossIcon onClick={() => console.log(`Deletar ${transaction._id}`)} />
         </Element>
+    )
+}
+
+function Title({ name }) {
+    return (
+        <Header>
+            <h1>Olá, {name}</h1>
+            <StyledLink to="/">
+                <ExitIcon />
+            </StyledLink>
+        </Header>
+    )
+}
+
+function ButtonsPanel() {
+    let navigate = useNavigate()
+
+    return (
+        <Buttons>
+            <AddTransaction onClick={() => navigate("/add/entrance")}>
+                <PlusIcon />
+                <p> Nova <br /> entrada </p>
+            </AddTransaction>
+            <AddTransaction onClick={() => navigate("/add/exit")}>
+                <MinusIcon />
+                <p> Nova <br /> saída </p>
+            </AddTransaction>
+        </Buttons>
     )
 }
 
@@ -95,6 +110,7 @@ const Header = styled.div`
         font-size: 26px;
         font-weight: 700;
         color: #FFFFFF;
+        text-align: left;
     }
 `;
 

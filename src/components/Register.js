@@ -1,6 +1,6 @@
 import axios from 'axios';
 import styled from 'styled-components';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate, } from 'react-router-dom';
 import { useState, useContext, useEffect } from 'react';
 
 import UserContext from '../contexts/UserContext.js';
@@ -12,8 +12,10 @@ export default function Register() {
         email: "",
         password: ""
     });
+    const { setUser } = useContext(UserContext)
     const [confirm, setConfirm] = useState("");
     const [message, setMessage] = useState("");
+    let navigate = useNavigate();
 
     function register() {
         if (credentials.name !== "" && credentials.email !== "" && credentials.password !== "" && confirm !== "") {
@@ -27,9 +29,10 @@ export default function Register() {
                         password: res.data.password,
                         token: res.data.token
                     };
-                    localStorage.setItem("MWLocalUser", JSON.stringify(newUser));
+                    localStorage.setItem("MWLocalUser", JSON.stringify(newUser.token));
                     setUser(newUser);
                 */
+               setTimeout(() => navigate("/home"), 3000)
             } else {
                 setMessage("As senhas devem coincidir");
             }

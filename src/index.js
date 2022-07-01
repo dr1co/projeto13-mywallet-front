@@ -6,10 +6,9 @@ import './css/reset.css';
 import Login from './components/Login.js';
 import Register from './components/Register.js';
 import Home from './components/Home.js';
-import NewEntrance from './components/Entrance/NewEntrance.js';
-import EditEntrance from './components/Entrance/EditEntrance.js';
-import NewExit from './components/Exit/NewExit.js';
-import EditExit from './components/Exit/EditExit.js';
+import NewEntrance from './components/NewEntrance.js';
+import NewExit from './components/NewExit.js';
+import EditTransaction from './components/EditTransaction.js';
 
 import UserContext from './contexts/UserContext.js';
 
@@ -28,10 +27,9 @@ function App() {
                     <Route path="/" element={<Login />} />
                     <Route path="/register" element={<Register />} />
                     <Route path="/home" element={<Home />} />
-                    <Route path="/entrance/add" element={<NewEntrance />} />
-                    <Route path="/exit/add" element={<NewExit />} />
-                    <Route path="/entrance/edit/:entranceId" element={<EditEntrance />} />
-                    <Route path="/exit/edit/:exitId" element={<EditExit />} />
+                    <Route path="/add/entrance" element={<NewEntrance />} />
+                    <Route path="/add/exit" element={<NewExit />} />
+                    <Route path="/edit/:transactionId" element={<EditTransaction />} />
                 </Routes>
             </UserContext.Provider>
         </BrowserRouter>
