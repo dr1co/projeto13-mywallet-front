@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { useState, useContext, useEffect } from 'react';
 
 import UserContext from '../contexts/UserContext.js';
+import PurpleBG from './Background.js';
 
 export default function Register() {
     const [credentials, setCredentials] = useState({
@@ -39,6 +40,7 @@ export default function Register() {
 
     return (
         <Container>
+            <PurpleBG />
             <Title>MyWallet</Title>
             <Input
                 type="text"
@@ -76,7 +78,6 @@ export default function Register() {
 const Container = styled.div`
     width: 100%;
     height: 100%;
-    background-color: #8C11BE;
     display: flex;
     flex-direction: column;
     justify-content: center;
