@@ -38,7 +38,7 @@ export default function Login() {
                     case 404:
                         setMessage("Não foi possível fazer login: usuário não encontrado!");
                         break;
-                    case 500 || 503:
+                    default:
                         setMessage("Problema no servidor. Tente novamente mais tarde ou culpe o Heroku :(");
                 }
             })
@@ -72,7 +72,7 @@ export default function Login() {
                     case 401:
                         setMessage("Senha incorreta. Tente novamente!");
                         break;
-                    case 500 || 503:
+                    default:
                         setMessage("Problema no servidor. Tente novamente mais tarde ou culpe o Heroku :(");
                 }
             })

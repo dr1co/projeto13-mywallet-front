@@ -12,9 +12,7 @@ import PurpleBG from './Background.js';
 export default function Home() {
     const [transactions, setTransactions] = useState([]);
     const { user } = useContext(UserContext);
-    const [message, setMessage] = useState("Não há registros de entrada ou saída")
-
-    let navigate = useNavigate();
+    const [message, setMessage] = useState("Não há registros de entrada ou saída");
 
     function getTransactions() {
         const promise = axios.get("https://proj13-mywalletback-dr1co.herokuapp.com/transactions", { headers: {
@@ -31,7 +29,7 @@ export default function Home() {
                 case 404:
                     setMessage("Não foi possível carregar os dados: usuário não encontrado! Faça login novamente!");
                     break;
-                case 500 || 503:
+                default:
                     setMessage("Não foi possível carregar os dados: problemas no servidor. Tente novamente mais tarde ou culpe o Heroku :(");
             }
         });

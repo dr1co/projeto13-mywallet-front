@@ -37,7 +37,7 @@ export default function EditTransaction() {
                     case 404:
                         setMessage("Não foi possível atualizar a transação: usuário não encontrado! Faça login novamente!");
                         break;
-                    case 500 || 503:
+                    default:
                         setMessage("Problema no servidor. Tente novamente mais tarde ou culpe o Heroku :(");
                 }
             });

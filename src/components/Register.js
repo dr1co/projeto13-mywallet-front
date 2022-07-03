@@ -1,7 +1,7 @@
 import axios from 'axios';
 import styled from 'styled-components';
 import { Link, useNavigate, } from 'react-router-dom';
-import { useState, useContext, useEffect } from 'react';
+import { useState, useContext } from 'react';
 
 import UserContext from '../contexts/UserContext.js';
 import PurpleBG from './Background.js';
@@ -40,7 +40,7 @@ export default function Register() {
                         case 401:
                             setMessage("Este e-mail está em uso. Favor utilizar outro!");
                             break;
-                        case 500 || 503:
+                        default:
                             setMessage("Problema no servidor. Tente novamente mais tarde ou culpe o Heroku :(");
                     }
                 });
