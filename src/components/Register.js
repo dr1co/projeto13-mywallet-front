@@ -21,18 +21,29 @@ export default function Register() {
         if (credentials.name !== "" && credentials.email !== "" && credentials.password !== "" && confirm !== "") {
             if (credentials.password === confirm) {
                 setMessage("");
-                //request no axios aqui embaixo:
-                /*
+                const request = axios.post("https://proj13-mywalletback-dr1co.herokuapp.com/auth/signup", credentials);
+                request.then((res) => {
                     const newUser = {
+                        userId: res.data.userId,
                         name: res.data.name,
                         email: res.data.email,
                         password: res.data.password,
                         token: res.data.token
                     };
-                    localStorage.setItem("MWLocalUser", JSON.stringify(newUser.token));
+                    localStorage.setItem("MWLocalUser", JSON.stringify({ token: newUser.token }));
                     setUser(newUser);
-                */
-               setTimeout(() => navigate("/home"), 3000)
+                    setMessage("Cadastro efetuado com sucesso! Logando...");
+                    setTimeout(() => navigate("/home"), 3000);
+                })
+                request.catch((err) => {
+                    switch (err.response.status) {
+                        case 401:
+                            setMessage("Este e-mail está em uso. Favor utilizar outro!");
+                            break;
+                        case 500 || 503:
+                            setMessage("Problema no servidor. Tente novamente mais tarde ou culpe o Heroku :(");
+                    }
+                });
             } else {
                 setMessage("As senhas devem coincidir");
             }

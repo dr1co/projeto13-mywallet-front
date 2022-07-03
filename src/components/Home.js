@@ -12,21 +12,29 @@ import PurpleBG from './Background.js';
 export default function Home() {
     const [transactions, setTransactions] = useState([]);
     const { user } = useContext(UserContext);
+    const [message, setMessage] = useState("Não há registros de entrada ou saída")
 
     let navigate = useNavigate();
 
     function getTransactions() {
-        //axios aqui com `Bearer ${user.token}`
-        /* 
+        const promise = axios.get("https://proj13-mywalletback-dr1co.herokuapp.com/transactions", { headers: {
+            "Authentication": `Bearer ${user.token}`
+        }});
+        promise.then((res) => {
             setTransactions(res.data);
-            transaction = {
-                _id: "",
-                name: "",
-                date: "",
-                value: num,
-                type: "entrance" || "exit"
+        });
+        promise.catch((err) => {
+            switch (err.response.status) {
+                case 422:
+                    setMessage("Não foi possível carregar os dados: token inválido! Faça login novamente!");
+                    break;
+                case 404:
+                    setMessage("Não foi possível carregar os dados: usuário não encontrado! Faça login novamente!");
+                    break;
+                case 500 || 503:
+                    setMessage("Não foi possível carregar os dados: problemas no servidor. Tente novamente mais tarde ou culpe o Heroku :(");
             }
-        */
+        });
     }
 
     useEffect(() => getTransactions(), []);
@@ -37,7 +45,7 @@ export default function Home() {
             <Title name={user.name} />
             <History align={transactions.length > 0 ? "default" : "center"}>
                 <NoContent display={transactions.length > 0 ? "none" : "flex"}>
-                    Não há registros de <br /> entrada ou saída
+                    {message}
                 </NoContent>
                 {transactions.map((t) => <Transaction transaction={t} />)}
             </History>

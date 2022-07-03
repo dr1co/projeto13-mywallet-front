@@ -18,33 +18,64 @@ export default function Login() {
 
     useEffect(() => {
         if (localUser) {
-            //request no axios aqui embaixo: com token
-            /*
-                setUser({
-                    name: res.data.name,
-                    email: res.data.email,
-                    password: res.data.password,
-                    token: res.data.token
-                })
-            */
-           navigate("/home")
-        }
-    }, []);
-
-    async function login() {
-        if (credentials.email !== "" && credentials.password !== "") {
-            setMessage("");
-            //request no axios aqui embaixo:
-            /*
+            const promise = axios.get("https://proj13-mywalletback-dr1co.herokuapp.com/auth", { headers: {
+                "Authentication": `Bearer ${localUser.token}`
+            }});
+            promise.then((res) => {
                 const newUser = {
+                    userId: res.data.userId,
                     name: res.data.name,
                     email: res.data.email,
                     password: res.data.password,
                     token: res.data.token
                 };
-                localStorage.setItem("MWLocalUser", JSON.stringify(newUser.token));
+                localStorage.setItem("MWLocalUser", JSON.stringify({ token: newUser.token }));
                 setUser(newUser);
-            */
+                navigate("/home");
+            });
+            promise.catch((err) => {
+                switch (err.response.status) {
+                    case 404:
+                        setMessage("Não foi possível fazer login: usuário não encontrado!");
+                        break;
+                    case 500 || 503:
+                        setMessage("Problema no servidor. Tente novamente mais tarde ou culpe o Heroku :(");
+                }
+            })
+        }
+    }, []);
+
+    function login() {
+        if (credentials.email !== "" && credentials.password !== "") {
+            setMessage("");
+            const request = axios.post("https://proj13-mywalletback-dr1co.herokuapp.com/users", credentials);
+            request.then((res) => {
+                const newUser = {
+                    userId: res.data.userId,
+                    name: res.data.name,
+                    email: res.data.email,
+                    password: res.data.password,
+                    token: res.data.token
+                };
+                localStorage.setItem("MWLocalUser", JSON.stringify({ token: newUser.token }));
+                setUser(newUser);
+                navigate("/home");
+            });
+            request.catch((err) => {
+                switch (err.response.status) {
+                    case 422:
+                        setMessage("Preencha os campos corretamente!");
+                        break;
+                    case 404:
+                        setMessage("Usuário não encontrado. Verifique os dados e tente novamente!");
+                        break;
+                    case 401:
+                        setMessage("Senha incorreta. Tente novamente!");
+                        break;
+                    case 500 || 503:
+                        setMessage("Problema no servidor. Tente novamente mais tarde ou culpe o Heroku :(");
+                }
+            })
            navigate("/home")
         } else {
             setMessage("Os campos acima são obrigatórios!");

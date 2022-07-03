@@ -10,6 +10,7 @@ import PurpleBG from './Background.js';
 
 export default function NewEntrance() {
     const [entrance, setEntrance] = useState({
+        date: dayjs().format("DD/MM"),
         name: "",
         value: "",
         type: "entrance"
@@ -20,19 +21,27 @@ export default function NewEntrance() {
 
     function sendEntrance() {
         if (entrance.name !== "" && entrance.value !== "" && entrance.type !== "") {
-            setMessage("")
-            //request no axios com Bearer ${user.token}
-            /*
-                entrance = {
-                    date: dayjs().format("DD/MM"),
-                    name: "",
-                    value: "",
-                    type: "entrance"
+            setMessage("");
+            const request = axios.post("https://proj13-mywalletback-dr1co.herokuapp.com/transactions", entrance, {
+                headers: {
+                    "Authentication": `Bearer ${user.token}`
                 }
-            */
-           navigate("/home")
+            });
+            request.then((res) => {
+                setMessage("Entrada cadastrada com sucesso! Redirecionando para a tela principal...")
+                setTimeout(() => navigate("/home"), 3000);
+            });
+            request.catch((err) => {
+                switch (err.response.status) {
+                    case 404:
+                        setMessage("Não foi possível cadastrar a entrada: usuário não encontrado! Faça login novamente!");
+                        break;
+                    case 500 || 503:
+                        setMessage("Problema no servidor. Tente novamente mais tarde ou culpe o Heroku :(");
+                }
+            });
         } else {
-            setMessage(`Os campos acima são obrigatórios + "Valor" deve ser um número`)
+            setMessage(`Os campos acima são obrigatórios + "Valor" deve ser um número`);
         }
     }
 

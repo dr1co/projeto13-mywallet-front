@@ -11,7 +11,7 @@ import PurpleBG from './Background.js';
 export default function EditTransaction() {
     const { transactionId } = useParams()
     const [transaction, setTransaction] = useState({
-        _id: transactionId,
+        date: dayjs().format("DD/MM"),
         name: "",
         value: "",
         type: ""
@@ -22,33 +22,44 @@ export default function EditTransaction() {
     
     function sendTransaction() {
         if (transaction.name !== "" && transaction.value !== "" && transaction.type !== "") {
-            setMessage("")
-            //request no axios com Bearer ${user.token}
-            /*
-            transaction = {
-                    date: dayjs().format("DD/MM"),
-                    name: "",
-                    value: "",
-                    type: "transaction"
+            setMessage("");
+            const request = axios.put(`https://proj13-mywalletback-dr1co.herokuapp.com/transactions/${transactionId}`, transaction, {
+                headers: {
+                    "Authentication": `Bearer ${user.token}`
                 }
-            */
-           navigate("/home")
+            });
+            request.then((res) => {
+                setMessage(`Transação atualizada com sucesso! Redirecionando para a tela principal...`)
+                setTimeout(() => navigate("/home"), 3000);
+            });
+            request.catch((err) => {
+                switch (err.response.status) {
+                    case 404:
+                        setMessage("Não foi possível atualizar a transação: usuário não encontrado! Faça login novamente!");
+                        break;
+                    case 500 || 503:
+                        setMessage("Problema no servidor. Tente novamente mais tarde ou culpe o Heroku :(");
+                }
+            });
         } else {
-            setMessage(`Os campos acima são obrigatórios + "Valor" deve ser um número`)
+            setMessage(`Os campos acima são obrigatórios + "Valor" deve ser um número`);
         }
     }
 
     useEffect(() => {
-        //requisição com axios a partir do id
-        /*
-        res.data = {
-            _id: "",
-            name: "",
-            value: "",
-            type: "transaction"
-        }
-        setTransaction(res.data)
-        */
+        const promise = axios.get(`https://proj13-mywalletback-dr1co.herokuapp.com/transactions/${transactionId}`, {
+            headers: {
+                "Authentication": `Bearer ${user.token}`
+            }
+        });
+        promise.then((res) => {
+            setTransaction({
+                ...transaction,
+                name: res.data.name,
+                value: res.data.value,
+                type: res.data.type
+            });
+        });
     }, []);
 
     return (
