@@ -76,7 +76,6 @@ export default function Login() {
                         setMessage("Problema no servidor. Tente novamente mais tarde ou culpe o Heroku :(");
                 }
             })
-           navigate("/home")
         } else {
             setMessage("Os campos acima são obrigatórios!");
         }
