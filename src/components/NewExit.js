@@ -25,7 +25,7 @@ export default function NewExit() {
         if (exit.name !== "" && exit.value !== "" && exit.type !== "") {
             setMessage("");
             setLoading(true);
-            const request = axios.post("https://proj13-mywalletback-dr1co.herokuapp.com/transactions", exit, {
+            const request = axios.post("https://proj13-mywallet-dr1co.herokuapp.com/transactions", exit, {
                 headers: {
                     "Authentication": `Bearer ${user.token}`
                 }

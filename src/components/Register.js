@@ -24,7 +24,7 @@ export default function Register() {
             if (credentials.password === confirm) {
                 setMessage("");
                 setLoading(true);
-                const request = axios.post("https://proj13-mywalletback-dr1co.herokuapp.com/auth/signup", credentials);
+                const request = axios.post("https://proj13-mywallet-dr1co.herokuapp.com/auth/signup", credentials);
                 request.then((res) => {
                     const newUser = {
                         userId: res.data.userId,

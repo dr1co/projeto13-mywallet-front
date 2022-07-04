@@ -18,7 +18,7 @@ export default function Home() {
     const [confirm, setConfirm] = useState("");
 
     function getTransactions() {
-        const promise = axios.get("https://proj13-mywalletback-dr1co.herokuapp.com/transactions", { headers: {
+        const promise = axios.get("https://proj13-mywallet-dr1co.herokuapp.com/transactions", { headers: {
             "Authentication": `Bearer ${user.token}`
         }});
         promise.then((res) => {
@@ -102,7 +102,7 @@ function ModalDelete({ confirm, setConfirm, user, getTransactions }) {
 
     function deleteTransaction() {
         setLoading(true);
-        const request = axios.delete(`https://proj13-mywalletback-dr1co.herokuapp.com/transactions/${confirm}`, {
+        const request = axios.delete(`https://proj13-mywallet-dr1co.herokuapp.com/transactions/${confirm}`, {
             headers: {
                 "Authorization": `Bearer ${user.token}`
             }

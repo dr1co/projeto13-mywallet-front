@@ -53,7 +53,7 @@ export default function Login() {
         if (credentials.email !== "" && credentials.password !== "") {
             setMessage("");
             setLoading(true);
-            const request = axios.post("https://proj13-mywalletback-dr1co.herokuapp.com/users", credentials);
+            const request = axios.post("https://proj13-mywallet-dr1co.herokuapp.com/users", credentials);
             request.then((res) => {
                 const newUser = {
                     userId: res.data.userId,
