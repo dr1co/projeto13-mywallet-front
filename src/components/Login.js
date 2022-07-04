@@ -21,7 +21,7 @@ export default function Login() {
     useEffect(() => {
         if (localUser) {
             setLoading(true);
-            const promise = axios.get("https://proj13-mywalletback-dr1co.herokuapp.com/auth", { headers: {
+            const promise = axios.get("https://proj13-mywallet-dr1co.herokuapp.com/auth", { headers: {
                 "Authentication": `Bearer ${localUser.token}`
             }});
             promise.then((res) => {
