@@ -27,7 +27,7 @@ export default function NewEntrance() {
             setLoading(true);
             const request = axios.post("https://proj13-mywallet-dr1co.herokuapp.com/transactions", entrance, {
                 headers: {
-                    "Authentication": `Bearer ${user.token}`
+                    "Authorization": `Bearer ${user.token}`
                 }
             });
             request.then((res) => {

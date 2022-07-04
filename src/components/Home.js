@@ -1,7 +1,7 @@
 import axios from 'axios';
 import styled from 'styled-components';
 import { useState, useContext, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 import UserContext from '../contexts/UserContext.js';
 import { IoExitOutline } from 'react-icons/io5';
@@ -19,12 +19,12 @@ export default function Home() {
 
     function getTransactions() {
         const promise = axios.get("https://proj13-mywallet-dr1co.herokuapp.com/transactions", { headers: {
-            "Authentication": `Bearer ${user.token}`
+            "Authorization": `Bearer ${user.token}`
         }});
         promise.then((res) => {
             setTransactions(res.data);
             if (res.data.length === 0) setMessage("Não há registros de entrada ou saída.");
-            else calculateBalance();
+            calculateBalance(res.data);
         });
         promise.catch((err) => {
             switch (err.response.status) {
@@ -38,16 +38,15 @@ export default function Home() {
                     setMessage("Não foi possível carregar os dados: problemas no servidor. Tente novamente mais tarde ou culpe o Heroku :(");
             }
         });
-        calculateBalance();
     }
 
-    function calculateBalance() {
-        let sum = 0;
-        for (let i = 0 ; i < transactions.length ; i++) {
-            if (transactions[i].type === "entrance") sum += Number(transactions[i].value);
-            else sum -= Number(transactions[i].value);
+    function calculateBalance(t) {
+        let s = 0;
+        for (let i = 0 ; i < t.length ; i++) {
+            if (t[i].type === "entrance") s += Number(t[i].value);
+            else s -= Number(t[i].value);
         }
-        setSum(sum.toFixed(2));
+        setSum(s.toFixed(2));
     }
 
     useEffect(() => getTransactions(), []);
@@ -60,12 +59,12 @@ export default function Home() {
                 <NoContent display={transactions.length > 0 ? "none" : "flex"}>
                     {message}
                 </NoContent>
-                {transactions.map((t) => <Transaction transaction={t} setConfirm={setConfirm} />)}
-                <Balance color={Number(sum) > 0 ? "#03AC00" : "#C70000"} display={transactions.length > 0 ? "flex" : "none"}> 
+                {transactions.map((t) => <Transaction key={t._id} transaction={t} setConfirm={setConfirm} />)}
+            </History>
+            <Balance color={Number(sum) > 0 ? "#03AC00" : "#C70000"}> 
                     <h1> SALDO </h1>
                     <p> {sum} </p>
                 </Balance>
-            </History>
             <ButtonsPanel />
             <ModalDelete confirm={confirm} setConfirm={setConfirm} user={user} getTransactions={getTransactions} />
         </Container>
@@ -86,12 +85,16 @@ function Transaction({ transaction, setConfirm }) {
 }
 
 function Title({ name }) {
+    let navigate = useNavigate();
+
+    function toLogin() {
+        localStorage.clear();
+        navigate("/");
+    }
     return (
         <Header>
             <h1>Olá, {name}</h1>
-            <StyledLink to="/">
-                <ExitIcon />
-            </StyledLink>
+            <ExitIcon onClick={toLogin} />
         </Header>
     )
 }
@@ -186,11 +189,12 @@ const Header = styled.div`
 
 const History = styled.div`
     width: 326px;
-    height: 60%;
+    height: 50%;
     padding: 8px 0;
     background: #FFFFFF;
     border: 0 solid transparent;
-    border-radius: 5px;
+    border-top-right-radius: 5px;
+    border-top-left-radius: 5px;
     display: flex;
     flex-direction: column;
     justify-content: ${props => props.align};
@@ -207,13 +211,13 @@ const NoContent = styled.p`
 `;
 
 const Balance = styled.div`
-    width: 100%;
+    width: 326px;
     min-height: 40px;
     padding: 0 10px;
     background: #FFFFFF;
     border-bottom-right-radius: 5px;
     border-bottom-left-radius: 5px;
-    display: ${props => props.display};
+    display: flex;
     justify-content: space-between;
     align-items: center;
     position: sticky;
@@ -383,8 +387,4 @@ const MinusIcon = styled(AiOutlineMinusCircle)`
     position: absolute;
     top: 12px;
     left: 12px;
-`;
-
-const StyledLink = styled(Link)`
-    text-decoration: none;
 `;

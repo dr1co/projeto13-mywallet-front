@@ -22,7 +22,7 @@ export default function Login() {
         if (localUser) {
             setLoading(true);
             const promise = axios.get("https://proj13-mywallet-dr1co.herokuapp.com/auth", { headers: {
-                "Authentication": `Bearer ${localUser.token}`
+                "Authorization": `Bearer ${localUser.token}`
             }});
             promise.then((res) => {
                 const newUser = {

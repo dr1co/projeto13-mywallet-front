@@ -28,7 +28,7 @@ export default function EditTransaction() {
             setLoading(true);
             const request = axios.put(`https://proj13-mywallet-dr1co.herokuapp.com/transactions/${transactionId}`, transaction, {
                 headers: {
-                    "Authentication": `Bearer ${user.token}`
+                    "Authorization": `Bearer ${user.token}`
                 }
             });
             request.then((res) => {
@@ -54,7 +54,7 @@ export default function EditTransaction() {
         setLoading(true);
         const promise = axios.get(`https://proj13-mywallet-dr1co.herokuapp.com/transactions/${transactionId}`, {
             headers: {
-                "Authentication": `Bearer ${user.token}`
+                "Authorization": `Bearer ${user.token}`
             }
         });
         promise.then((res) => {

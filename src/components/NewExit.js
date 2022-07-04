@@ -27,7 +27,7 @@ export default function NewExit() {
             setLoading(true);
             const request = axios.post("https://proj13-mywallet-dr1co.herokuapp.com/transactions", exit, {
                 headers: {
-                    "Authentication": `Bearer ${user.token}`
+                    "Authorization": `Bearer ${user.token}`
                 }
             });
             request.then((res) => {
