@@ -5,6 +5,7 @@ import { useState, useContext, useEffect } from 'react';
 
 import UserContext from '../contexts/UserContext.js';
 import PurpleBG from './Background.js'
+import Loader from './Loader.js';
 
 export default function Login() {
     const [credentials, setCredentials] = useState({
@@ -14,10 +15,12 @@ export default function Login() {
     const { setUser } = useContext(UserContext);
     const localUser = JSON.parse(localStorage.getItem("MWLocalUser"));
     const [message, setMessage] = useState("")
-    let navigate = useNavigate()
+    const [loading, setLoading] = useState(false);
+    let navigate = useNavigate();
 
     useEffect(() => {
         if (localUser) {
+            setLoading(true);
             const promise = axios.get("https://proj13-mywalletback-dr1co.herokuapp.com/auth", { headers: {
                 "Authentication": `Bearer ${localUser.token}`
             }});
@@ -41,6 +44,7 @@ export default function Login() {
                     default:
                         setMessage("Problema no servidor. Tente novamente mais tarde ou culpe o Heroku :(");
                 }
+                setLoading(false);
             })
         }
     }, []);
@@ -48,6 +52,7 @@ export default function Login() {
     function login() {
         if (credentials.email !== "" && credentials.password !== "") {
             setMessage("");
+            setLoading(true);
             const request = axios.post("https://proj13-mywalletback-dr1co.herokuapp.com/users", credentials);
             request.then((res) => {
                 const newUser = {
@@ -75,7 +80,8 @@ export default function Login() {
                     default:
                         setMessage("Problema no servidor. Tente novamente mais tarde ou culpe o Heroku :(");
                 }
-            })
+                setLoading(false);
+            });
         } else {
             setMessage("Os campos acima são obrigatórios!");
         }
@@ -90,14 +96,24 @@ export default function Login() {
                 placeholder="E-mail"
                 value={credentials.email}
                 onChange={(e) => setCredentials({...credentials, email: e.target.value})}
-                borderColor={message && !credentials.email ? "#FF8E9D" : "transparent"} />
+                borderColor={message && !credentials.email ? "#FF8E9D" : "transparent"}
+                disabled={loading}
+                opacity={loading ? "0.7" : "1"} />
             <Input
                 type="password"
                 placeholder="Senha"
                 value={credentials.password}
                 onChange={(e) => setCredentials({...credentials, password: e.target.value})}
-                borderColor={message && !credentials.password ? "#FF8E9D" : "transparent"} />
-            <LoginButton onClick={login}>Entrar</LoginButton>
+                borderColor={message && !credentials.password ? "#FF8E9D" : "transparent"}
+                disabled={loading}
+                opacity={loading ? "0.7" : "1"} />
+            <LoginButton
+            onClick={login}
+            disabled={loading}
+            bgcolor={loading ? "#763293" : "#A328D6"}
+            cursor={loading ? "default" : "pointer"}>
+                {loading ? <Loader /> : "Entrar"}
+            </LoginButton>
             <StyledLink to="/register">
                 <p>Primeira vez? Cadastre-se!</p>
             </StyledLink>
@@ -135,6 +151,7 @@ const Input = styled.input`
     border-radius: 5px;
     font-size: 20px;
     color: #000000;
+    opacity: ${props => props.opacity};
 
     &::placeholder {
         color: #000000;
@@ -146,13 +163,13 @@ const LoginButton = styled.button`
     width: 326px;
     height: 46px;
     margin: 6px auto;
-    background-color: #A328D6;
+    background-color: ${props => props.bgcolor};
     border: 0 solid transparent;
     border-radius: 5px;
     font-size: 20px;
     font-weight: 700;
     color: #FFFFFF;
-    cursor: pointer;
+    cursor: ${props => props.cursor};
 `;
 
 const StyledLink = styled(Link)`

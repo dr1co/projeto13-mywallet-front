@@ -7,6 +7,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import UserContext from '../contexts/UserContext.js';
 import { IoExitOutline } from 'react-icons/io5';
 import PurpleBG from './Background.js';
+import Loader from './Loader.js';
 
 export default function NewExit() {
     const [exit, setExit] = useState({
@@ -16,12 +17,14 @@ export default function NewExit() {
         type: "exit"
     });
     const [message, setMessage] = useState("");
+    const [loading, setLoading] = useState(false);
     const { user } = useContext(UserContext);
     let navigate = useNavigate();
 
-    function sendexit() {
+    function sendExit() {
         if (exit.name !== "" && exit.value !== "" && exit.type !== "") {
             setMessage("");
+            setLoading(true);
             const request = axios.post("https://proj13-mywalletback-dr1co.herokuapp.com/transactions", exit, {
                 headers: {
                     "Authentication": `Bearer ${user.token}`
@@ -39,6 +42,7 @@ export default function NewExit() {
                     default:
                         setMessage("Problema no servidor. Tente novamente mais tarde ou culpe o Heroku :(");
                 }
+                setLoading(false);
             });
         } else {
             setMessage(`Os campos acima são obrigatórios + "Valor" deve ser um número`);
@@ -59,14 +63,24 @@ export default function NewExit() {
                 placeholder="Valor"
                 value={exit.value}
                 onChange={(e) => setExit({...exit, value: e.target.value})}
-                borderColor={message && !exit.value ? "#FF8E9D" : "transparent"} />
+                borderColor={message && !exit.value ? "#FF8E9D" : "transparent"}
+                disabled={loading}
+                opacity={loading ? "0.7" : "1"} />
             <Input
                 type="text"
                 placeholder="Descrição"
                 value={exit.name}
                 onChange={(e) => setExit({...exit, name: e.target.value})}
-                borderColor={message && !exit.name ? "#FF8E9D" : "transparent"} />
-            <AddButton onClick={() => sendexit()}> Salvar Saída </AddButton>
+                borderColor={message && !exit.name ? "#FF8E9D" : "transparent"}
+                disabled={loading}
+                opacity={loading ? "0.7" : "1"} />
+            <AddButton
+            onClick={sendExit}
+            disabled={loading}
+            bgcolor={loading ? "#763293" : "#A328D6"}
+            cursor={loading ? "default" : "pointer"}>
+                {loading ? <Loader /> : "Salvar Saída"}
+            </AddButton>
             <Warn>{message}</Warn>
         </Container>
     )
@@ -107,6 +121,7 @@ const Input = styled.input`
     border-radius: 5px;
     font-size: 20px;
     color: #000000;
+    opacity: ${props => props.opacity};
 
     -webkit-appearance: textfield;
     -moz-appearance: textfield;
@@ -125,13 +140,13 @@ const AddButton = styled.button`
     width: 326px;
     height: 46px;
     margin: 6px auto;
-    background-color: #A328D6;
+    background-color: ${props => props.bgcolor};
     border: 0 solid transparent;
     border-radius: 5px;
     font-size: 20px;
     font-weight: 700;
     color: #FFFFFF;
-    cursor: pointer;
+    cursor: ${props => props.cursor};
 `;
 
 const Warn = styled.div`

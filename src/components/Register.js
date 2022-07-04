@@ -5,6 +5,7 @@ import { useState, useContext } from 'react';
 
 import UserContext from '../contexts/UserContext.js';
 import PurpleBG from './Background.js';
+import Loader from './Loader.js';
 
 export default function Register() {
     const [credentials, setCredentials] = useState({
@@ -15,12 +16,14 @@ export default function Register() {
     const { setUser } = useContext(UserContext)
     const [confirm, setConfirm] = useState("");
     const [message, setMessage] = useState("");
+    const [loading, setLoading] = useState(false);
     let navigate = useNavigate();
 
     function register() {
         if (credentials.name !== "" && credentials.email !== "" && credentials.password !== "" && confirm !== "") {
             if (credentials.password === confirm) {
                 setMessage("");
+                setLoading(true);
                 const request = axios.post("https://proj13-mywalletback-dr1co.herokuapp.com/auth/signup", credentials);
                 request.then((res) => {
                     const newUser = {
@@ -43,6 +46,7 @@ export default function Register() {
                         default:
                             setMessage("Problema no servidor. Tente novamente mais tarde ou culpe o Heroku :(");
                     }
+                    setLoading(false);
                 });
             } else {
                 setMessage("As senhas devem coincidir");
@@ -61,26 +65,40 @@ export default function Register() {
                 placeholder="Nome"
                 value={credentials.name}
                 onChange={(e) => setCredentials({...credentials, name: e.target.value})}
-                borderColor={message && !credentials.name ? "#FF8E9D" : "transparent"} />
+                borderColor={message && !credentials.name ? "#FF8E9D" : "transparent"}
+                disabled={loading}
+                opacity={loading ? "0.7" : "1"} />
             <Input
                 type="text"
                 placeholder="E-mail"
                 value={credentials.email}
                 onChange={(e) => setCredentials({...credentials, email: e.target.value})}
-                borderColor={message && !credentials.email ? "#FF8E9D" : "transparent"} />
+                borderColor={message && !credentials.email ? "#FF8E9D" : "transparent"}
+                disabled={loading}
+                opacity={loading ? "0.7" : "1"} />
             <Input
                 type="password"
                 placeholder="Senha"
                 value={credentials.password}
                 onChange={(e) => setCredentials({...credentials, password: e.target.value})}
-                borderColor={(message && !credentials.password) || message === "As senhas devem coincidir" ? "#FF8E9D" : "transparent"} />
+                borderColor={(message && !credentials.password) || message === "As senhas devem coincidir" ? "#FF8E9D" : "transparent"}
+                disabled={loading}
+                opacity={loading ? "0.7" : "1"} />
             <Input
                 type="password"
                 placeholder="Confirme a senha"
                 value={confirm}
                 onChange={(e) => setConfirm(e.target.value)}
-                borderColor={(message && !confirm) || message === "As senhas devem coincidir" ? "#FF8E9D" : "transparent"} />
-            <RegisterButton onClick={register}>Cadastrar</RegisterButton>
+                borderColor={(message && !confirm) || message === "As senhas devem coincidir" ? "#FF8E9D" : "transparent"}
+                disabled={loading}
+                opacity={loading ? "0.7" : "1"} />
+            <RegisterButton
+            onClick={register}
+            disabled={loading}
+            bgcolor={loading ? "#763293" : "#A328D6"}
+            cursor={loading ? "default" : "pointer"}>
+                {loading ? <Loader /> : "Cadastrar"}
+            </RegisterButton>
             <StyledLink to="/">
                 <p>Já tem uma conta? Entre agora!</p>
             </StyledLink>
@@ -118,6 +136,7 @@ const Input = styled.input`
     border-radius: 5px;
     font-size: 20px;
     color: #000000;
+    opacity: ${props => props.opacity};
 
     &::placeholder {
         color: #000000;
@@ -129,13 +148,13 @@ const RegisterButton = styled.button`
     width: 326px;
     height: 46px;
     margin: 6px auto;
-    background-color: #A328D6;
+    background-color: ${props => props.bgcolor};
     border: 0 solid transparent;
     border-radius: 5px;
     font-size: 20px;
     font-weight: 700;
     color: #FFFFFF;
-    cursor: pointer;
+    cursor: ${props => props.cursor};
 `;
 
 const StyledLink = styled(Link)`

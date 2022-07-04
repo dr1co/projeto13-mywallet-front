@@ -7,6 +7,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 import UserContext from '../contexts/UserContext.js';
 import { IoExitOutline } from 'react-icons/io5';
 import PurpleBG from './Background.js';
+import Loader from './Loader.js'
 
 export default function EditTransaction() {
     const { transactionId } = useParams()
@@ -17,12 +18,14 @@ export default function EditTransaction() {
         type: ""
     });
     const [message, setMessage] = useState("");
+    const [loading, setLoading] = useState(false);
     const { user } = useContext(UserContext);
     let navigate = useNavigate();
     
     function sendTransaction() {
         if (transaction.name !== "" && transaction.value !== "" && transaction.type !== "") {
             setMessage("");
+            setLoading(true);
             const request = axios.put(`https://proj13-mywalletback-dr1co.herokuapp.com/transactions/${transactionId}`, transaction, {
                 headers: {
                     "Authentication": `Bearer ${user.token}`
@@ -40,6 +43,7 @@ export default function EditTransaction() {
                     default:
                         setMessage("Problema no servidor. Tente novamente mais tarde ou culpe o Heroku :(");
                 }
+                setLoading(false);
             });
         } else {
             setMessage(`Os campos acima são obrigatórios + "Valor" deve ser um número`);
@@ -47,6 +51,7 @@ export default function EditTransaction() {
     }
 
     useEffect(() => {
+        setLoading(true);
         const promise = axios.get(`https://proj13-mywalletback-dr1co.herokuapp.com/transactions/${transactionId}`, {
             headers: {
                 "Authentication": `Bearer ${user.token}`
@@ -59,14 +64,25 @@ export default function EditTransaction() {
                 value: res.data.value,
                 type: res.data.type
             });
+            setLoading(false);
         });
+        promise.catch((err) => {
+            switch (err.response.status) {
+                case 404:
+                    setMessage("Não foi possível cadastrar a saída: usuário não encontrado! Faça login novamente!");
+                    break;
+                default:
+                    setMessage("Problema no servidor. Tente novamente mais tarde ou culpe o Heroku :(");
+            }
+            setLoading(false);
+        })
     }, []);
 
     return (
         <Container>
             <PurpleBG />
             <Header>
-                <h1>Editar {transaction.type === "entrance" ? "Entrada" : "Saída"}</h1>
+                <h1>Editar {transaction.type === "entrance" ? "Entrada" : (transaction.type === "exit" ? "Saída" : "")}</h1>
                 <StyledLink to="/home">
                     <ExitIcon />
                 </StyledLink>
@@ -76,14 +92,24 @@ export default function EditTransaction() {
                 placeholder="Valor"
                 value={transaction.value}
                 onChange={(e) => setTransaction({...transaction, value: e.target.value})}
-                borderColor={message && !transaction.value ? "#FF8E9D" : "transparent"} />
+                borderColor={message && !transaction.value ? "#FF8E9D" : "transparent"}
+                disabled={loading}
+                opacity={loading ? "0.7" : "1"} />
             <Input
                 type="text"
                 placeholder="Descrição"
                 value={transaction.name}
                 onChange={(e) => setTransaction({...transaction, name: e.target.value})}
-                borderColor={message && !transaction.name ? "#FF8E9D" : "transparent"} />
-            <AddButton onClick={() => sendTransaction()}> Atualizar {transaction.type === "entrance" ? "Entrada" : "Saída"} </AddButton>
+                borderColor={message && !transaction.name ? "#FF8E9D" : "transparent"}
+                disabled={loading}
+                opacity={loading ? "0.7" : "1"} />
+            <AddButton
+            onClick={sendTransaction}
+            disabled={loading}
+            bgcolor={loading ? "#763293" : "#A328D6"}
+            cursor={loading ? "default" : "pointer"}>
+                {loading ? <Loader /> : `Atualizar ${transaction.type === "entrance" ? "Entrada" : (transaction.type === "exit" ? "Saída" : "")}`}
+            </AddButton>
             <Warn>{message}</Warn>
         </Container>
     )
@@ -124,6 +150,7 @@ const Input = styled.input`
     border-radius: 5px;
     font-size: 20px;
     color: #000000;
+    opacity: ${props => props.opacity};
 
     -webkit-appearance: textfield;
     -moz-appearance: textfield;
@@ -142,13 +169,13 @@ const AddButton = styled.button`
     width: 326px;
     height: 46px;
     margin: 6px auto;
-    background-color: #A328D6;
+    background-color: ${props => props.bgcolor};
     border: 0 solid transparent;
     border-radius: 5px;
     font-size: 20px;
     font-weight: 700;
     color: #FFFFFF;
-    cursor: pointer;
+    cursor: ${props => props.cursor};
 `;
 
 const Warn = styled.div`
