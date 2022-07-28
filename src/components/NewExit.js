@@ -22,7 +22,7 @@ export default function NewExit() {
     let navigate = useNavigate();
 
     function sendExit() {
-        if (exit.name !== "" && exit.value !== "" && exit.type !== "") {
+        if (exit.name !== "" && exit.value !== "" && exit.type !== "" && Number(exit.value) > 0) {
             setMessage("");
             setLoading(true);
             const request = axios.post("https://proj13-mywallet-dr1co.herokuapp.com/transactions", exit, {
@@ -45,7 +45,7 @@ export default function NewExit() {
                 setLoading(false);
             });
         } else {
-            setMessage(`Os campos acima são obrigatórios + "Valor" deve ser um número`);
+            setMessage(`Os campos acima são obrigatórios + "Valor" deve ser um número positivo`);
         }
     }
 

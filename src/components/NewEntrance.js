@@ -22,7 +22,7 @@ export default function NewEntrance() {
     let navigate = useNavigate();
 
     function sendEntrance() {
-        if (entrance.name !== "" && entrance.value !== "" && entrance.type !== "") {
+        if (entrance.name !== "" && entrance.value !== "" && entrance.type !== "" && Number(entrance.value) > 0) {
             setMessage("");
             setLoading(true);
             const request = axios.post("https://proj13-mywallet-dr1co.herokuapp.com/transactions", entrance, {
@@ -45,7 +45,7 @@ export default function NewEntrance() {
                 setLoading(false);
             });
         } else {
-            setMessage(`Os campos acima são obrigatórios + "Valor" deve ser um número`);
+            setMessage(`Os campos acima são obrigatórios + "Valor" deve ser um número positivo`);
         }
     }
 

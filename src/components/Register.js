@@ -13,6 +13,7 @@ export default function Register() {
         email: "",
         password: ""
     });
+    const { setUser } = useContext(UserContext);
     const [confirm, setConfirm] = useState("");
     const [message, setMessage] = useState("");
     const [loading, setLoading] = useState(false);
@@ -25,6 +26,15 @@ export default function Register() {
                 setLoading(true);
                 const request = axios.post("https://proj13-mywallet-dr1co.herokuapp.com/auth/signup", credentials);
                 request.then((res) => {
+                    const newUser = {
+                        userId: res.data.userId,
+                        name: res.data.name,
+                        email: res.data.email,
+                        password: res.data.password,
+                        token: res.data.token
+                    };
+                    localStorage.setItem("MWLocalUser", JSON.stringify({ token: newUser.token }));
+                    setUser(newUser);
                     setMessage("Cadastro efetuado com sucesso! Redirecionando...");
                     setTimeout(() => navigate("/home"), 3000);
                 })

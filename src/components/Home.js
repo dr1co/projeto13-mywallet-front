@@ -77,7 +77,9 @@ function Transaction({ transaction, setConfirm }) {
     return (
         <Element>
             <Date>{transaction.date}</Date>
-            <h1 onClick={() => navigate(`/edit/${transaction._id}`)}>{transaction.name}</h1>
+            <ElementName>
+                <h1 onClick={() => navigate(`/edit/${transaction._id}`)}>{transaction.name}</h1>
+            </ElementName>
             <Value color={transaction.type === "entrance" ? "#03AC00" : "#C70000"}>{Number(transaction.value).toFixed(2)}</Value>
             <CrossIcon onClick={() => setConfirm(transaction._id)} />
         </Element>
@@ -115,6 +117,7 @@ function ModalDelete({ confirm, setConfirm, user, getTransactions }) {
             setTimeout(() => {
                 setConfirm("");
                 getTransactions();
+                setLoading(false);
                 setMessage(`${user.name}, tem certeza que deseja remover essa transação?`);
             }, 2000);
         });
@@ -124,6 +127,7 @@ function ModalDelete({ confirm, setConfirm, user, getTransactions }) {
             setTimeout(() => {
                 setConfirm("");
                 getTransactions();
+                setLoading(false);
                 setMessage(`${user.name}, tem certeza que deseja remover essa transação?`);
             }, 2000);
         });
@@ -277,12 +281,15 @@ const Element = styled.div`
     h1 {
         font-size: 16px;
         color: #000000;
-        min-width: 145px;
-        max-width: 145px;
-        text-overflow: ellipsis;
-        text-align: left;
         cursor: pointer;
     }
+`;
+
+const ElementName = styled.div`
+    width: 145px;
+    max-width: 145px;
+    text-overflow: ellipsis;
+    text-align: left;
 `;
 
 const Date = styled.p`
@@ -347,6 +354,7 @@ const YesButton = styled.button`
     box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.05);
     font-size: 18px;
     font-weight: 700;
+    cursor: pointer;
 `;
 
 const NoButton = styled.button`
@@ -359,6 +367,7 @@ const NoButton = styled.button`
     box-shadow: 5px 5px 2px rgba(0, 0, 0, 0.05);
     font-size: 18px;
     font-weight: 700;
+    cursor: pointer;
 `;
 
 const CrossIcon = styled(ImCross)`

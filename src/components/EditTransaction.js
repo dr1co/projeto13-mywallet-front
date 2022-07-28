@@ -23,7 +23,7 @@ export default function EditTransaction() {
     let navigate = useNavigate();
     
     function sendTransaction() {
-        if (transaction.name !== "" && transaction.value !== "" && transaction.type !== "") {
+        if (transaction.name !== "" && transaction.value !== "" && transaction.type !== "" && Number(transaction.value) > 0) {
             setMessage("");
             setLoading(true);
             const request = axios.put(`https://proj13-mywallet-dr1co.herokuapp.com/transactions/${transactionId}`, transaction, {
@@ -46,7 +46,7 @@ export default function EditTransaction() {
                 setLoading(false);
             });
         } else {
-            setMessage(`Os campos acima são obrigatórios + "Valor" deve ser um número`);
+            setMessage(`Os campos acima são obrigatórios + "Valor" deve ser um número positivo`);
         }
     }
 
